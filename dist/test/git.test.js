@@ -43,6 +43,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+var path = __importStar(require("path"));
 var Git = __importStar(require("../lib/git"));
 describe('Git', function () {
     describe('inRepo', function () {
@@ -55,6 +56,77 @@ describe('Git', function () {
                         return [4 /*yield*/, Git.inRepo(__dirname)];
                     case 1:
                         _a.apply(void 0, [_b.sent()]).toBe(true);
+                        return [2 /*return*/];
+                }
+            });
+        }); });
+        it('returns false when not in a git repo', function () { return __awaiter(void 0, void 0, void 0, function () {
+            var dir, _a;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        dir = path.resolve(__dirname, '..', '..');
+                        _a = expect;
+                        return [4 /*yield*/, Git.inRepo(dir)];
+                    case 1:
+                        _a.apply(void 0, [_b.sent()]).toBe(false);
+                        return [2 /*return*/];
+                }
+            });
+        }); });
+    });
+    describe('inGitHubRepo', function () {
+        it('returns true when origin points to a GitHub repository', function () { return __awaiter(void 0, void 0, void 0, function () {
+            var _a;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        _a = expect;
+                        return [4 /*yield*/, Git.inGitHubRepo(__dirname)];
+                    case 1:
+                        _a.apply(void 0, [_b.sent()]).toBe(true);
+                        return [2 /*return*/];
+                }
+            });
+        }); });
+        it('returns false when not in a git repo', function () { return __awaiter(void 0, void 0, void 0, function () {
+            var dir, _a;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        dir = path.resolve(__dirname, '..', '..');
+                        _a = expect;
+                        return [4 /*yield*/, Git.inGitHubRepo(dir)];
+                    case 1:
+                        _a.apply(void 0, [_b.sent()]).toBe(false);
+                        return [2 /*return*/];
+                }
+            });
+        }); });
+        it('returns false when in a git repo with no origin', function () { return __awaiter(void 0, void 0, void 0, function () {
+            var dir, _a;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        dir = path.resolve(__dirname, 'fixtures/repo-no-origin');
+                        _a = expect;
+                        return [4 /*yield*/, Git.inGitHubRepo(dir)];
+                    case 1:
+                        _a.apply(void 0, [_b.sent()]).toBe(false);
+                        return [2 /*return*/];
+                }
+            });
+        }); });
+        it('returns false when in a git repo where origin does not point to GitHub', function () { return __awaiter(void 0, void 0, void 0, function () {
+            var dir, _a;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        dir = path.resolve(__dirname, 'fixtures/repo-non-github-origin');
+                        _a = expect;
+                        return [4 /*yield*/, Git.inGitHubRepo(dir)];
+                    case 1:
+                        _a.apply(void 0, [_b.sent()]).toBe(false);
                         return [2 /*return*/];
                 }
             });

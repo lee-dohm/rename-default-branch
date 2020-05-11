@@ -43,20 +43,41 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var Git = __importStar(require("./git"));
+var GitHub = __importStar(require("./github"));
+var yargs = require("yargs");
+function parseArguments() {
+    return yargs.options({
+        bad: { type: 'string', default: 'master', describe: 'Branch name to replace' },
+        branch: { type: 'string', default: 'primary', describe: 'New branch name' },
+        token: {
+            type: 'string',
+            demandOption: true,
+            describe: 'Personal access token to use for authorization',
+        },
+    }).argv;
+}
 function run() {
     return __awaiter(this, void 0, void 0, function () {
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0: return [4 /*yield*/, Git.inRepo(__dirname)];
+        var argv, _a, owner, name, defaultBranch, ref, response;
+        return __generator(this, function (_b) {
+            switch (_b.label) {
+                case 0:
+                    argv = parseArguments();
+                    _a = argv._[0].split('/'), owner = _a[0], name = _a[1];
+                    GitHub.setToken(argv.token);
+                    return [4 /*yield*/, GitHub.getDefaultBranch(owner, name)];
                 case 1:
-                    if (_a.sent()) {
-                        console.log('In a git repo');
-                    }
-                    else {
-                        console.log('Not in a git repo');
-                    }
-                    return [2 /*return*/];
+                    defaultBranch = _b.sent();
+                    if (!(defaultBranch.name === argv.bad)) return [3 /*break*/, 4];
+                    return [4 /*yield*/, GitHub.createBranch(argv.branch, defaultBranch.repository.id, defaultBranch.target.oid)];
+                case 2:
+                    ref = _b.sent();
+                    return [4 /*yield*/, GitHub.updateDefaultBranch(owner, name, argv.branch)];
+                case 3:
+                    response = _b.sent();
+                    console.log(JSON.stringify(response), null, 2);
+                    _b.label = 4;
+                case 4: return [2 /*return*/];
             }
         });
     });

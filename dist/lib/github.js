@@ -35,61 +35,89 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
-    result["default"] = mod;
-    return result;
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-var child_process = __importStar(require("child_process"));
-var util = __importStar(require("util"));
-var exec = util.promisify(child_process.exec);
-function execGit(args) {
+var graphql_1 = require("@octokit/graphql");
+var rest_1 = require("@octokit/rest");
+var createBranchMutation = "\nmutation createBranch($name: String!, $oid: GitObjectID!, $repoId: ID!) {\n  createRef(input: { clientMutationId: \"rename-default-branch\", name: $name, oid: $oid, repositoryId: $repoId }) {\n    ref {\n      name\n      repository {\n        id\n      }\n      target {\n        oid\n      }\n    }\n  }\n}\n";
+var getDefaultBranchQuery = "\nquery getDefaultBranch($owner: String!, $name: String!) {\n  repository(owner: $owner, name: $name) {\n    defaultBranchRef {\n      name\n      repository {\n        id\n      }\n      target {\n        oid\n      }\n    }\n  }\n}\n";
+var authToken = '';
+/**
+ * Create a branch on a GitHub repository.
+ *
+ * Returns a reference to the newly created branch.
+ */
+function createBranch(name, repoId, oid) {
     return __awaiter(this, void 0, void 0, function () {
+        var octokit, response;
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0: return [4 /*yield*/, exec("git " + args)];
+                case 0:
+                    octokit = graphql_1.graphql.defaults({
+                        headers: {
+                            authorization: "token " + authToken,
+                        },
+                    });
+                    return [4 /*yield*/, octokit(createBranchMutation, {
+                            name: "refs/heads/" + name,
+                            oid: oid,
+                            repoId: repoId,
+                        })];
+                case 1:
+                    response = (_a.sent());
+                    return [2 /*return*/, response.createRef.ref];
+            }
+        });
+    });
+}
+exports.createBranch = createBranch;
+/**
+ * Get the default branch for a repository.
+ *
+ * Returns a reference to the repository's default branch.
+ */
+function getDefaultBranch(owner, name) {
+    return __awaiter(this, void 0, void 0, function () {
+        var octokit, response;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    octokit = graphql_1.graphql.defaults({
+                        headers: {
+                            authorization: "token " + authToken,
+                        },
+                    });
+                    return [4 /*yield*/, octokit(getDefaultBranchQuery, {
+                            owner: owner,
+                            name: name,
+                        })];
+                case 1:
+                    response = (_a.sent());
+                    return [2 /*return*/, response.repository.defaultBranchRef];
+            }
+        });
+    });
+}
+exports.getDefaultBranch = getDefaultBranch;
+/**
+ * Set the token to use for authorization against the GraphQL API.
+ *
+ * Returns the authorized `graphql` object to use for future requests.
+ */
+function setToken(token) {
+    authToken = token;
+}
+exports.setToken = setToken;
+function updateDefaultBranch(owner, name, branch) {
+    return __awaiter(this, void 0, void 0, function () {
+        var octokit;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    octokit = new rest_1.Octokit({ auth: authToken });
+                    return [4 /*yield*/, octokit.repos.update({ owner: owner, repo: name, default_branch: branch })];
                 case 1: return [2 /*return*/, _a.sent()];
             }
         });
     });
 }
-function inGitRepo() {
-    return __awaiter(this, void 0, void 0, function () {
-        var _a;
-        return __generator(this, function (_b) {
-            switch (_b.label) {
-                case 0:
-                    _b.trys.push([0, 2, , 3]);
-                    return [4 /*yield*/, execGit("rev-parse --is-inside-work-tree 2>/dev/null >/dev/null")];
-                case 1:
-                    _b.sent();
-                    return [2 /*return*/, true];
-                case 2:
-                    _a = _b.sent();
-                    return [2 /*return*/, false];
-                case 3: return [2 /*return*/];
-            }
-        });
-    });
-}
-function run() {
-    return __awaiter(this, void 0, void 0, function () {
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0: return [4 /*yield*/, inGitRepo()];
-                case 1:
-                    if (_a.sent()) {
-                        console.log("In a git repo");
-                    }
-                    else {
-                        console.log("Not in a git repo");
-                    }
-                    return [2 /*return*/];
-            }
-        });
-    });
-}
-run();
+exports.updateDefaultBranch = updateDefaultBranch;

@@ -57,13 +57,38 @@ function execGit(args, options) {
     });
 }
 /**
+ * Determines if `dir` is inside a repository where `origin` points to GitHub.
+ *
+ * Returns `true` if `dir` is a GitHub repository; `false` otherwise.
+ */
+function inGitHubRepo(dir) {
+    return __awaiter(this, void 0, void 0, function () {
+        var stdout, e_1;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    _a.trys.push([0, 2, , 3]);
+                    return [4 /*yield*/, execGit('remote get-url origin', { cwd: dir })];
+                case 1:
+                    stdout = (_a.sent()).stdout;
+                    return [2 /*return*/, stdout.includes('github.com')];
+                case 2:
+                    e_1 = _a.sent();
+                    return [2 /*return*/, false];
+                case 3: return [2 /*return*/];
+            }
+        });
+    });
+}
+exports.inGitHubRepo = inGitHubRepo;
+/**
  * Determines if `dir` is inside a git repository.
  *
  * Returns `true` if `dir` is inside a git repository; `false` otherwise.
  */
 function inRepo(dir) {
     return __awaiter(this, void 0, void 0, function () {
-        var e_1;
+        var e_2;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
@@ -73,7 +98,7 @@ function inRepo(dir) {
                     _a.sent();
                     return [2 /*return*/, true];
                 case 2:
-                    e_1 = _a.sent();
+                    e_2 = _a.sent();
                     return [2 /*return*/, false];
                 case 3: return [2 /*return*/];
             }
