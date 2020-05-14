@@ -1,8 +1,6 @@
 import { graphql } from '@octokit/graphql'
 import { Octokit } from '@octokit/rest'
 
-type GraphQl = typeof graphql
-
 /**
  * A git reference, either a branch or a tag.
  */
@@ -110,20 +108,19 @@ export async function getDefaultBranch(owner: string, name: string) {
 }
 
 /**
- * Set the token to use for authorization against the GraphQL API.
- *
- * Returns the authorized `graphql` object to use for future requests.
+ * Set the token to use for authorization against the REST and GraphQL APIs.
  */
 export function setToken(token: string) {
   authToken = token
 }
 
-export async function updateDefaultBranch(
-  owner: string,
-  name: string,
-  branch: string
-) {
+/**
+ * Updates the default branch for a repository.
+ *
+ * Returns the response data.
+ */
+export async function updateDefaultBranch(owner: string, name: string, branch: string) {
   const octokit = new Octokit({ auth: authToken })
 
-  return await octokit.repos.update({ owner, repo: name, default_branch: branch })
+  return (await octokit.repos.update({ owner, repo: name, default_branch: branch })).data
 }

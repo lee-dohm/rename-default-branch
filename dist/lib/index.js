@@ -45,6 +45,9 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var GitHub = __importStar(require("./github"));
 var yargs = require("yargs");
+/**
+ * Parses the command-line arguments into the options used to execute the program.
+ */
 function parseArguments() {
     return yargs.options({
         bad: { type: 'string', default: 'master', describe: 'Branch name to replace' },
@@ -56,26 +59,29 @@ function parseArguments() {
         },
     }).argv;
 }
+/**
+ * Runs the program.
+ */
 function run() {
     return __awaiter(this, void 0, void 0, function () {
-        var argv, _a, owner, name, defaultBranch, ref, response;
+        var options, _a, owner, name, defaultBranch, ref, response;
         return __generator(this, function (_b) {
             switch (_b.label) {
                 case 0:
-                    argv = parseArguments();
-                    _a = argv._[0].split('/'), owner = _a[0], name = _a[1];
-                    GitHub.setToken(argv.token);
+                    options = parseArguments();
+                    _a = options._[0].split('/'), owner = _a[0], name = _a[1];
+                    GitHub.setToken(options.token);
                     return [4 /*yield*/, GitHub.getDefaultBranch(owner, name)];
                 case 1:
                     defaultBranch = _b.sent();
-                    if (!(defaultBranch.name === argv.bad)) return [3 /*break*/, 4];
-                    return [4 /*yield*/, GitHub.createBranch(argv.branch, defaultBranch.repository.id, defaultBranch.target.oid)];
+                    if (!(defaultBranch.name === options.bad)) return [3 /*break*/, 4];
+                    return [4 /*yield*/, GitHub.createBranch(options.branch, defaultBranch.repository.id, defaultBranch.target.oid)];
                 case 2:
                     ref = _b.sent();
-                    return [4 /*yield*/, GitHub.updateDefaultBranch(owner, name, argv.branch)];
+                    return [4 /*yield*/, GitHub.updateDefaultBranch(owner, name, options.branch)];
                 case 3:
                     response = _b.sent();
-                    console.log(JSON.stringify(response), null, 2);
+                    console.log(JSON.stringify(response, null, 2));
                     _b.label = 4;
                 case 4: return [2 /*return*/];
             }

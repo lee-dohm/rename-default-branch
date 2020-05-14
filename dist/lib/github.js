@@ -99,14 +99,17 @@ function getDefaultBranch(owner, name) {
 }
 exports.getDefaultBranch = getDefaultBranch;
 /**
- * Set the token to use for authorization against the GraphQL API.
- *
- * Returns the authorized `graphql` object to use for future requests.
+ * Set the token to use for authorization against the REST and GraphQL APIs.
  */
 function setToken(token) {
     authToken = token;
 }
 exports.setToken = setToken;
+/**
+ * Updates the default branch for a repository.
+ *
+ * Returns the response data.
+ */
 function updateDefaultBranch(owner, name, branch) {
     return __awaiter(this, void 0, void 0, function () {
         var octokit;
@@ -115,7 +118,7 @@ function updateDefaultBranch(owner, name, branch) {
                 case 0:
                     octokit = new rest_1.Octokit({ auth: authToken });
                     return [4 /*yield*/, octokit.repos.update({ owner: owner, repo: name, default_branch: branch })];
-                case 1: return [2 /*return*/, _a.sent()];
+                case 1: return [2 /*return*/, (_a.sent()).data];
             }
         });
     });
